@@ -1,0 +1,60 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.example.api_validation.app-mergeReleaseResources-13:/values-vi/values-vi.xml",
+            "map": [
+                {
+                    "source": "C:\\Users\\srikanth\\.gradle\\caches\\transforms-3\\a3fbb37dd5ef93c98bc80ddf0289d0af\\transformed\\browser-1.5.0\\res\\values-vi\\values-vi.xml",
+                    "from": {
+                        "startLines": "2,3,4,5",
+                        "startColumns": "4,4,4,4",
+                        "startOffsets": "55,172,283,397",
+                        "endColumns": "116,110,113,104",
+                        "endOffsets": "167,278,392,497"
+                    },
+                    "to": {
+                        "startLines": "9,19,20,21",
+                        "startColumns": "4,4,4,4",
+                        "startOffsets": "785,1594,1705,1819",
+                        "endColumns": "116,110,113,104",
+                        "endOffsets": "897,1700,1814,1919"
+                    }
+                },
+                {
+                    "source": "C:\\Users\\srikanth\\.gradle\\caches\\transforms-3\\0b9c903fef8d2eb2a269c36999ef4a74\\transformed\\core-1.10.1\\res\\values-vi\\values-vi.xml",
+                    "from": {
+                        "startLines": "2,3,4,5,6,7,8,9",
+                        "startColumns": "4,4,4,4,4,4,4,4",
+                        "startOffsets": "55,152,254,353,453,556,669,785",
+                        "endColumns": "96,101,98,99,102,112,115,100",
+                        "endOffsets": "147,249,348,448,551,664,780,881"
+                    },
+                    "to": {
+                        "startLines": "2,3,4,5,6,7,8,22",
+                        "startColumns": "4,4,4,4,4,4,4,4",
+                        "startOffsets": "55,152,254,353,453,556,669,1924",
+                        "endColumns": "96,101,98,99,102,112,115,100",
+                        "endOffsets": "147,249,348,448,551,664,780,2020"
+                    }
+                },
+                {
+                    "source": "C:\\Users\\srikanth\\.gradle\\caches\\transforms-3\\1c54749537a4d1ff3f2079d73b98930f\\transformed\\jetified-exoplayer-core-2.18.7\\res\\values-vi\\values-vi.xml",
+                    "from": {
+                        "startLines": "2,3,4,5,6,7,8,9,10",
+                        "startColumns": "4,4,4,4,4,4,4,4,4",
+                        "startOffsets": "55,128,191,259,328,419,489,579,667",
+                        "endColumns": "72,62,67,68,90,69,89,87,79",
+                        "endOffsets": "123,186,254,323,414,484,574,662,742"
+                    },
+                    "to": {
+                        "startLines": "10,11,12,13,14,15,16,17,18",
+                        "startColumns": "4,4,4,4,4,4,4,4,4",
+                        "startOffsets": "902,975,1038,1106,1175,1266,1336,1426,1514",
+                        "endColumns": "72,62,67,68,90,69,89,87,79",
+                        "endOffsets": "970,1033,1101,1170,1261,1331,1421,1509,1589"
+                    }
+                }
+            ]
+        }
+    ]
+}

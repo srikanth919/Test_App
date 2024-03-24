@@ -1,0 +1,4 @@
+#Sun Mar 24 11:45:15 IST 2024
+base.0=C\:\\Users\\srikanth\\AndroidStudioProjects\\DemoApp\\build\\app\\intermediates\\dex\\release\\minifyReleaseWithR8\\classes.dex
+path.0=classes.dex
+renamed.0=classes.dex

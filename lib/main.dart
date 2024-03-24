@@ -3,6 +3,8 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:webview_flutter/webview_flutter.dart';
+import 'dart:async';
 
 void main() {
   runApp(MyApp());
@@ -24,12 +26,14 @@ class DeviceInfoWidget extends StatefulWidget {
 
 class _DeviceInfoWidgetState extends State<DeviceInfoWidget> {
   String? _deviceId = '';
+  List<String>? mediaUrls; // List to store media URLs
   String? _key = ''; // State variable to store the key value
 
   @override
   void initState() {
     super.initState();
     _getDeviceId();
+    fetchData(); // Call fetchData after getting device ID
   }
 
   Future<void> _getDeviceId() async {
@@ -42,27 +46,27 @@ class _DeviceInfoWidgetState extends State<DeviceInfoWidget> {
     } else if (Platform.isIOS) {
       IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
       setState(() {
-        _deviceId = iosInfo.identifierForVendor; // Use identifierForVendor as device ID
+        _deviceId =
+            iosInfo.identifierForVendor; // Use identifierForVendor as device ID
       });
     }
     fetchData(); // Call fetchData after getting device ID
   }
 
   Future<void> fetchData() async {
-    // Define the API endpoint
-    String apiUrl = 'https://stagegallery.rinx.com/mobileapp/fetch_playlist_task/';
-    //String apiUrl = 'https://stagegallery.rinx.com/mobileapp/generate_key_task/';
+    // Define the API endpoints
+    String keyUrl =
+        'https://stagegallery.rinx.com/mobileapp/generate_key_task/';
+    String playlistUrl =
+        'https://stagegallery.rinx.com/mobileapp/fetch_playlist_task/';
 
     // Encode the device ID to JSON
     Map<String, dynamic> requestBody = {'device_id': _deviceId};
 
-    // Convert the JSON parameters to a query strin
-    // Append the query string to the API URL
-
     try {
-      // Make the API request
+      // Make the API request to generate key
       final response = await http.post(
-        Uri.parse('https://stagegallery.rinx.com/mobileapp/generate_key_task/'),
+        Uri.parse('$keyUrl'),
         headers: {
           'Content-Type': 'application/json', // Set the content type
         },
@@ -76,25 +80,31 @@ class _DeviceInfoWidgetState extends State<DeviceInfoWidget> {
         setState(() {
           _key = key; // Update the state variable
         });
-        print(response.body);
-        print('Key: $_key');
+
         // Make the API request to fetch data with key as path parameter
         final playlistResponse = await http.get(
-          Uri.parse('$apiUrl$_key'),
+          Uri.parse('$playlistUrl$_key/'),
         );
-
-        print(playlistResponse);
 
         if (playlistResponse.statusCode == 200) {
           // API call successful, handle response data
           Map<String, dynamic> playlistData = jsonDecode(playlistResponse.body);
-          // Process the playlist data as needed
-          print('Playlist data: $playlistData');
+          List<dynamic> mediaIds = playlistData['media_ids'];
+          List<String> urls = [];
+          mediaIds.forEach((media) {
+            if (media['file'] != null) {
+              urls.add(media['file']); // Add file URL to the list
+            }
+          });
+          setState(() {
+            mediaUrls = urls; // Update the state variable with media URLs
+          });
+          _navigateToSecondPage(); // Navigate to second page
         } else {
           // API call failed, handle error
-          print('Failed to fetch playlist data: ${playlistResponse.statusCode}');
+          print(
+              'Failed to fetch playlist data: ${playlistResponse.statusCode}');
         }
-
       } else {
         // API call failed, handle error
         print('Failed to fetch data: ${response.statusCode}');
@@ -105,12 +115,24 @@ class _DeviceInfoWidgetState extends State<DeviceInfoWidget> {
     }
   }
 
+  void _navigateToSecondPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => SecondPage(gen_key: _key, mediaUrls: mediaUrls),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(' Demo App'),
-        centerTitle: true,
+        title: Text(
+          'Rinx App',
+          style: TextStyle(fontSize: 30, color: Colors.black),
+        ),
+        centerTitle: false,
       ),
       body: Center(
         child: Column(
@@ -118,19 +140,82 @@ class _DeviceInfoWidgetState extends State<DeviceInfoWidget> {
           children: [
             Text(
               'Key: $_key', // Display the key value
-              style: TextStyle(fontSize: 50),
-
+              style: TextStyle(fontSize: 40),
             ),
           ],
         ),
       ),
     );
   }
+}
+
+class SecondPage extends StatefulWidget {
+  final String? gen_key;
+  final List<String>? mediaUrls;
+
+  const SecondPage({Key? key, this.gen_key, this.mediaUrls}) : super(key: key);
+
+  @override
+  _SecondPageState createState() => _SecondPageState();
+}
+
+class _SecondPageState extends State<SecondPage> {
+  int _currentIndex = 0;
+  late Timer _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _startDisplayingMedia();
   }
 
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
 
+  void _startDisplayingMedia() {
+    _timer = Timer.periodic(Duration(seconds: 10), (timer) {
+      if (_currentIndex < widget.mediaUrls!.length - 1) {
+        setState(() {
+          _currentIndex++;
+        });
+      } else {
+        _timer.cancel();
+      }
+    });
+  }
 
-
-
-
-
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            if (widget.mediaUrls != null && widget.mediaUrls!.isNotEmpty)
+              if (widget.mediaUrls![_currentIndex].endsWith('.mp4'))
+                Container(
+                  height: 300,
+                  child: WebView(
+                    initialUrl: widget.mediaUrls![_currentIndex],
+                    javascriptMode: JavascriptMode.unrestricted,
+                  ),
+                )
+              else
+                Column(
+                  children: [
+                    Image.network(
+                      widget.mediaUrls![_currentIndex],
+                      width: MediaQuery.of(context).size.width,
+                      height: MediaQuery.of(context).size.height,
+                    ),
+                  ],
+                ),
+          ],
+        ),
+      ),
+    );
+  }
+}

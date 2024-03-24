@@ -35,6 +35,7 @@ dependencies:
   url_launcher: ^6.0.3
   webview_flutter: ^2.0.13
   device_info_plus: ^2.1.0 # or the latest version available
+  video_player: ^2.1.8
 
 
 
